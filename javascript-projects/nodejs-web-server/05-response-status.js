@@ -1,30 +1,28 @@
 const http = require('http');
 
 const requestListener = (request, response) => {
-  response.setHeader('Content-Type', 'application/json');
-  response.setHeader('X-Powered-By', 'NodeJS');
-  // jika membuat nama properti secara mandiri/tidak standar, maka sangat disarankan untuk menambahkan huruf X di awal nama propertinya. 
+  // response: instance dari http.serverResponse dan merupakan writableStream
+  response.setHeader('Content-Type', 'text/html');
+  // memberitahu client bahwa request resource yang diminta tidak ada.
+  // response.statusCode = 404;
+
+  // 404 defaultnya adalah 'not found'
+  // response.statusMessage = 'User is not found';
 
   const { method, url } = request;
 
   if(url === '/') {
     if(method === 'GET') {
       response.statusCode = 200;
-      response.end(JSON.stringify({
-        message: 'Ini adalah homepage',
-      }));
+      response.end('<h1>Ini adalah homepage</h1>');
     } else {
       response.statusCode = 400;
-      response.end(JSON.stringify({
-        message: `Halaman tidak dapat diakses dengan ${method} request`,
-      }));
+      response.end(`<h1>Halaman tidak dapat diakses dengan ${method} request</h1>`);
     }
   } else if(url === '/about') {
     if(method === 'GET') {
       response.statusCode = 200;
-      response.end(JSON.stringify({
-        message: 'Ini adalah halaman about',
-      }));
+      response.end('<h1>Ini adalah halaman about</h1>');
     } else if(method === 'POST') {
       let body = [];
     
@@ -36,22 +34,15 @@ const requestListener = (request, response) => {
         body = Buffer.concat(body).toString();
         const { name } = JSON.parse(body); 
         response.statusCode = 200;
-        response.end(JSON.stringify({
-          message: `Hai, ${name}! Ini adalah halaman about`,
-        }));
+        response.end(`<h1>Hai, ${name}! Ini adalah halaman about</h1>`);
       });
     } else {
       response.statusCode = 400;
-      response.end(JSON.stringify({
-        message: `Halaman tidak dapat diakses dengan ${method} request`,
-      }));
+      response.end(`<h1>Halaman tidak dapat diakses dengan ${method} request</h1>`);
     }
   } else {
     response.statusCode = 404;
-    response.end(JSON.stringify({
-      message: 'Halaman tidak ditemukan!',
-    }));
-    // JSON.stringify: mengubah objek JavaScript menjadi JSON string
+    response.end('<h1>Halaman tidak ditemukan</h1>');
   }
 
 };
@@ -64,3 +55,12 @@ const host = 'localhost';
 server.listen(port, host, () => {
   console.log(`Server berjalan pada http://${host}:${port}`);
 });
+
+/*
+status code
+100-199 : informational responses.
+200 - 299 : successful responses.
+300-399 : redirect.
+400-499 : client error.
+500-599 : server errors.
+*/
